@@ -14,16 +14,15 @@ public class Job {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String title;
     private String description;
     private String category;
     private String company;
     private String location;
 
-    @ManyToOne
-    @JoinColumn(name = "employer_id", nullable = false)
-    private User employer;
+//    @ManyToOne
+//    @JoinColumn(name = "employer_id", nullable = false)
+//    private User employer;
 
     private LocalDateTime createdAt;
 
@@ -75,13 +74,13 @@ public class Job {
         this.location = location;
     }
 
-    public User getEmployer() {
-        return employer;
-    }
-
-    public void setEmployer(User employer) {
-        this.employer = employer;
-    }
+//    public User getEmployer() {
+//        return employer;
+//    }
+//
+//    public void setEmployer(User employer) {
+//        this.employer = employer;
+//    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

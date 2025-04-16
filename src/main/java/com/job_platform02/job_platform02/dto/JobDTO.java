@@ -8,14 +8,14 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class JobDTO {
-    private Long id;               // Used in response
+    private Long id;
     private String title;
     private String description;
     private String category;
     private String company;
     private String location;
-    private Long employerId;        // ID of the employer creating the job
-    private LocalDateTime createdAt; // Used in response
+    private Long employerId;
+    private LocalDateTime createdAt;
 
 
     public Long getId() {

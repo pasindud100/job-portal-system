@@ -3,10 +3,9 @@ package com.job_platform02.job_platform02.service;
 
 import com.job_platform02.job_platform02.dto.JobDTO;
 import com.job_platform02.job_platform02.entity.Job;
-import com.job_platform02.job_platform02.entity.User;
-import com.job_platform02.job_platform02.repository.JobRepository;
-import com.job_platform02.job_platform02.repository.UserRepository;
 
+
+import com.job_platform02.job_platform02.repository.JobRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -17,21 +16,20 @@ import java.util.stream.Collectors;
 @Service
 public class JobService {
     private final JobRepository jobRepository;
-    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public JobService(JobRepository jobRepository, UserRepository userRepository, ModelMapper modelMapper) {
+    public JobService(JobRepository jobRepository, ModelMapper modelMapper) {
         this.jobRepository = jobRepository;
-        this.userRepository = userRepository;
+//        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
     public JobDTO createJob(JobDTO jobDTO) {
-        User employer = userRepository.findById(jobDTO.getEmployerId())
-                .orElseThrow(() -> new RuntimeException("Employer not found"));
+//        User employer = userRepository.findById(jobDTO.getEmployerId())
+//                .orElseThrow(() -> new RuntimeException("Employer not found"));
 
         Job job = modelMapper.map(jobDTO, Job.class);
-        job.setEmployer(employer);
+//        job.setEmployer(employer);
         job.setCreatedAt(LocalDateTime.now());
 
         Job savedJob = jobRepository.save(job);

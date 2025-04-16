@@ -1,36 +1,21 @@
 package com.job_platform02.job_platform02.dto;
 
-/* Author : pasindu
- place: ACPT student*/
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.job_platform02.job_platform02.entity.UserRole;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class UserDTO {
-    private Long id;
-    private String name;
     private String email;
     private String password;
-    private String role;
+    private UserRole role;
 
-    public Long getId() {
-        return id;
+    public UserDTO() {
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public UserDTO(String email, String password, UserRole role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
     }
 
     public String getEmail() {
@@ -49,11 +34,11 @@ public class UserDTO {
         this.password = password;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
         this.role = role;
     }
 }
