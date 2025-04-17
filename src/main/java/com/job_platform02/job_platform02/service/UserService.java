@@ -1,8 +1,5 @@
 package com.job_platform02.job_platform02.service;
 
-/* Author : pasindu
- place: ACPT student*/
-
 import com.job_platform02.job_platform02.dto.UserDTO;
 import com.job_platform02.job_platform02.entity.User;
 import com.job_platform02.job_platform02.repository.UserRepository;
@@ -22,7 +19,12 @@ public class UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public UserDTO registerUser(UserDTO userDTO) {
+    public UserDTO registerUser (UserDTO userDTO) {
+        // Check if user already exists
+        if (userRepository.findByEmail(userDTO.getEmail()) != null) {
+            throw new RuntimeException("User  already exists with this email");
+        }
+
         User user = modelMapper.map(userDTO, User.class);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -32,7 +34,7 @@ public class UserService {
     public UserDTO findUserByEmail(String email) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            return null; // Base case to stop recursion
+            return null; // User not found
         }
         return modelMapper.map(user, UserDTO.class);
     }

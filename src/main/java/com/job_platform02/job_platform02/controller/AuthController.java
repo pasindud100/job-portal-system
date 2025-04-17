@@ -1,30 +1,3 @@
-//package com.jwt.demojwt.controller;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.*;
-//
-//@RestController
-//@RequestMapping("/api/auth")
-//public class AuthController {
-//
-//    @Autowired
-//    private com.jwt.demojwt.service.UserService userService;
-//
-//    @PostMapping("/register")
-//    public ResponseEntity<com.jwt.demojwt.dto.UserDTO> register(@RequestBody com.jwt.demojwt.dto.UserDTO userDTO) {
-//        com.jwt.demojwt.dto.UserDTO createdUser  = userService.registerUser (userDTO);
-//        return ResponseEntity.ok(createdUser );
-//    }
-//
-//    @PostMapping("/login")
-//    public ResponseEntity<String> login(@RequestBody com.jwt.demojwt.dto.UserDTO userDTO) {
-//        // Implement login logic here (JWT generation)
-//        return ResponseEntity.ok("Login successful");
-//    }
-//}
-
-
 package com.job_platform02.job_platform02.controller;
 
 import com.job_platform02.job_platform02.dto.UserDTO;
@@ -37,21 +10,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
-
-    private final  UserService userService;
+    private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
+    @Autowired
     public AuthController(UserService userService, AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
@@ -59,63 +32,35 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> register(@RequestBody UserDTO userDTO) {
-        UserDTO createdUser  = userService.registerUser(userDTO);
-        return ResponseEntity.ok(createdUser );
+    public ResponseEntity<String> register(@Validated @RequestBody UserDTO userDTO) {
+        try {
+            userService.registerUser (userDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("User  registered successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
-
-//    @PostMapping("/login")
-//    public ResponseEntity<String> login(@RequestBody UserDTO userDTO) {
-//        // Authenticate the user
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword())
-//        );
-//
-//        // If authentication is successful, generate JWT token
-//        UserDTO user = userService.findUserByEmail(userDTO.getEmail());
-//        String jwtToken = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
-//        return ResponseEntity.ok(jwtToken);
-//    }
-
-//    @PostMapping("/login")
-//    public ResponseEntity<String> login(@RequestBody UserDTO userDTO) {
-//        try {
-//            Authentication authentication = authenticationManager.authenticate(
-//                    new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword())
-//            );
-//
-//            // If authentication is successful, generate JWT token
-//            UserDTO user = userService.findUserByEmail(userDTO.getEmail());
-//            if (user == null) {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-//            }
-//            String jwtToken = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
-//            return ResponseEntity.ok(jwtToken);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Login failed: " + e.getMessage());
-//        }
-//    }
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody UserDTO userDTO) {
         try {
-            // Authenticate the user...
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(userDTO.getEmail(), userDTO.getPassword())
             );
 
-            // If authentication is successful, generate jwt token
             UserDTO user = userService.findUserByEmail(userDTO.getEmail());
-            String jwtToken = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "User  not found"));
+            }
 
-            // Create a response object
+            String jwtToken = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
             Map<String, Object> response = new HashMap<>();
             response.put("accessToken", jwtToken);
-            response.put("role", user.getRole().name()); // Include the user role
+            response.put("role", user.getRole().name());
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Login failed: " + e.getMessage()));
         }
     }
 }

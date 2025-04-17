@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .and()
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/jobs").permitAll()
+                        .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();
@@ -53,7 +53,6 @@ public class SecurityConfig {
         return authBuilder.build();
     }
 
-    // ✅ CORS Configuration Bean
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
