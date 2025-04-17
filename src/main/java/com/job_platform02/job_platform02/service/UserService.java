@@ -19,14 +19,17 @@ public class UserService {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public UserDTO registerUser (UserDTO userDTO) {
+    public UserDTO registerUser(UserDTO userDTO) {
         // Check if user already exists
         if (userRepository.findByEmail(userDTO.getEmail()) != null) {
             throw new RuntimeException("User  already exists with this email");
         }
 
         User user = modelMapper.map(userDTO, User.class);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
+
         userRepository.save(user);
         return modelMapper.map(user, UserDTO.class);
     }
@@ -34,7 +37,7 @@ public class UserService {
     public UserDTO findUserByEmail(String email) {
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            return null; // User not found
+            return null; //User not found
         }
         return modelMapper.map(user, UserDTO.class);
     }

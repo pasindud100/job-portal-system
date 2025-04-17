@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
@@ -49,18 +50,19 @@ public class AuthController {
             );
 
             UserDTO user = userService.findUserByEmail(userDTO.getEmail());
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "User  not found"));
-            }
-
             String jwtToken = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+
             Map<String, Object> response = new HashMap<>();
             response.put("accessToken", jwtToken);
             response.put("role", user.getRole().name());
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Login failed: " + e.getMessage()));
+            e.printStackTrace(); // Log the actual error
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Login failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
         }
     }
+
 }
